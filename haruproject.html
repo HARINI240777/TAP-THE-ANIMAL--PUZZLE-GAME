@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tap The Animal</title>
+
+<style>
+body {
+    margin: 0;
+    background: #0f172a;
+    color: white;
+    font-family: Arial, sans-serif;
+    text-align: center;
+}
+
+h1 {
+    margin-top: 15px;
+}
+
+#gameInfo {
+    font-size: 18px;
+    margin: 10px 0;
+}
+
+#gameArea {
+    width: 100%;
+    height: 70vh;
+    position: relative;
+    background: #020617;
+    overflow: hidden;
+}
+
+.animal {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    background-size: cover;
+    border-radius: 50%;
+    cursor: pointer;
+    touch-action: manipulation;
+}
+
+button {
+    margin: 10px;
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 6px;
+    background: #22c55e;
+    cursor: pointer;
+}
+</style>
+</head>
+<body>
+
+<h1>🐾 Tap The Animal</h1>
+<div id="gameInfo">Score: 0 | Time: 30s</div>
+
+<div id="gameArea"></div>
+
+<button onclick="startGame()">▶ Start Game</button>
+
+<script>
+const gameArea = document.getElementById("gameArea");
+const gameInfo = document.getElementById("gameInfo");
+
+const animals = [
+    "https://images.unsplash.com/photo-1558788353-f76d92427f16", // dog
+    "https://images.unsplash.com/photo-1518791841217-8f162f1e1131", // cat
+    "https://images.unsplash.com/photo-1546182990-dffeafbe841d", // lion
+    "https://images.unsplash.com/photo-1558980664-10ea3b4b8b89"  // panda
+];
+
+let score = 0;
+let timeLeft = 30;
+let timerInterval;
+
+function startGame() {
+    score = 0;
+    timeLeft = 30;
+    updateInfo();
+    gameArea.innerHTML = "";
+
+    clearInterval(timerInterval);
+    timerInterval = setInterval(() => {
+        timeLeft--;
+        updateInfo();
+        if (timeLeft <= 0) endGame();
+    }, 1000);
+
+    spawnAnimal();
+}
+
+function spawnAnimal() {
+    if (timeLeft <= 0) return;
+
+    const animal = document.createElement("div");
+    animal.className = "animal";
+    animal.style.backgroundImage = `url(${animals[Math.floor(Math.random() * animals.length)]})`;
+
+    animal.style.left = Math.random() * (window.innerWidth - 80) + "px";
+    animal.style.top = Math.random() * (gameArea.clientHeight - 80) + "px";
+
+    animal.addEventListener("click", () => {
+        score++;
+        updateInfo();
+        animal.remove();
+        spawnAnimal();
+    });
+
+    animal.addEventListener("touchstart", () => {
+        score++;
+        updateInfo();
+        animal.remove();
+        spawnAnimal();
+    });
+
+    gameArea.appendChild(animal);
+}
+
+function updateInfo() {
+    gameInfo.innerText = `Score: ${score} | Time: ${timeLeft}s`;
+}
+
+function endGame() {
+    clearInterval(timerInterval);
+    gameArea.innerHTML = "";
+    alert(`🎉 Game Over! Your score: ${score}`);
+}
+</script>
+
+</body>
+</html>
+
